@@ -43,7 +43,7 @@ def get_airplane_location(**kwargs):
                                     'sensors','geo_altitude','squawk','spi',
                                     'position_source'] # ,'category']
     
-    df_all_state_vector['createAt'] = datetime.fromtimestamp(data['time'])
+    df_all_state_vector['createAt'] = data['time']
     
 
     return df_all_state_vector
@@ -63,7 +63,7 @@ def upload_to_snowflake(conn_info, dataframe, table_name):
 def put_airplane_data(**kwargs):
     # XCom에서 데이터프레임 받기
     ti = kwargs['ti']
-    df = ti.xcom_pull(task_ids='get_airplane_location')
+    df = ti.xcom_pull(task_ids='get_airplane_data')
     
     conn_info = {'user' : SnowflakeID,
                  'password' : SnowflakePW,
@@ -97,15 +97,13 @@ with DAG(
 ) as dag:
 
     fetch_and_process_data_task = PythonOperator(
-        task_id = 'fetch_and_process_data',
+        task_id = 'get_airplane_data',
         python_callable = get_airplane_location,
-        provide_context = True
     )
 
     upload_partitioned_data_task = PythonOperator(
-        task_id = 'upload_partitioned_data',
+        task_id = 'upload_airplane_data',
         python_callable = put_airplane_data,
-        provide_context = True
     )
 
     fetch_and_process_data_task >> upload_partitioned_data_task
