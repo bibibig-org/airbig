@@ -1,4 +1,5 @@
 from airflow import DAG
+from airflow.models import Variable
 from airflow.operators.python import PythonOperator
 
 
@@ -11,13 +12,14 @@ from datetime import datetime, timedelta
 
 
 # 인증 정보
-OpenskyID = "nyoths1379"
-OpenskyPW = "tara7350" 
-SnowflakeID = "bibibig"
-SnowflakePW = "Bingrebibibic12!"
-SnowflakeAccount = "cdbccwb-ae90733"
-SnowflakeDatabase = "BIBIBIG"
-SnowflakeSchema = "BRONZE_STATE_DATA"
+OpenskyID = Variable.get("OpenskyID")
+OpenskyPW = Variable.get("OpenskyPW")
+SnowflakeID = Variable.get("SnowflakeID")
+SnowflakePW = Variable.get("SnowflakePW")
+SnowflakeAccount = Variable.get("SnowflakeAccount")
+SnowflakeDatabase = Variable.get("SnowflakeDatabase")
+SnowflakeSchema = Variable.get("SnowflakeSchema")
+
 
 #%%
 # 모든 위치 상태값 검색 -> 호출 제한량 있음, 
