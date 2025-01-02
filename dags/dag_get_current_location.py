@@ -19,9 +19,7 @@ SnowflakePW = Variable.get("SnowflakePW")
 SnowflakeAccount = Variable.get("SnowflakeAccount")
 SnowflakeDatabase = Variable.get("SnowflakeDatabase")
 SnowflakeSchema = Variable.get("SnowflakeSchema")
-
-
-
+SnowflakeTableName = 'AIRPLANE_LOCATION'
 
 
 #%%
@@ -78,7 +76,7 @@ def put_airplane_data(**kwargs):
     
     # snowflake only used capital letter colname
     df.columns = [col.upper() for col in df.columns]
-    upload_to_snowflake(conn_info, df, 'AIRPLANE_LOCATION')
+    upload_to_snowflake(conn_info, df, SnowflakeTableName)
     
     
 

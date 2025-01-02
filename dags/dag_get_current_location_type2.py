@@ -19,6 +19,8 @@ SnowflakePW = Variable.get("SnowflakePW")
 SnowflakeAccount = Variable.get("SnowflakeAccount")
 SnowflakeDatabase = Variable.get("SnowflakeDatabase")
 SnowflakeSchema = Variable.get("SnowflakeSchema")
+SnowflakeTableName = 'AIRPLANE_LOCATION'
+
 
 
 #%%
@@ -92,7 +94,7 @@ def put_airplane_data(**kwargs):
     df['CREATEAT'] = pd.to_datetime(df['CREATEAT'], unit='s')
     df['CREATEAT'] = df['CREATEAT'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) else None)
     
-    upload_to_snowflake(conn_info, df, 'AIRPLANE_LOCATION')
+    upload_to_snowflake(conn_info, df, SnowflakeTableName)
     
     
 
