@@ -1,6 +1,7 @@
 from airflow.decorators import task
+from airflow.models import Variable
 from airflow import DAG
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import requests
 import json
 from airflow.providers.snowflake.hooks.snowflake import SnowflakeHook
@@ -122,9 +123,8 @@ def extract_opensky():
     return df_raw
 @task
 def transform_opensky(df_raw):
-    df_raw["firstSeen"] = pd.to_datetime(df_raw["firstSeen"], unit="s", utc=True)
-    df_raw["lastSeen"] = pd.to_datetime(df_raw["lastSeen"], unit="s", utc=True)
-    df_raw['createAt'] = datetime.utcnow()
+    df_raw['createAt'] = datetime.now(timezone.utc)
+    df_raw['createAt'] = df_raw['createAt'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) else None)
 
     return df_raw
 
@@ -136,9 +136,9 @@ def load_opensky_to_snowflake(cursor, results, target_table):
         cursor.execute(f"""      
             CREATE OR REPLACE TABLE {target_table} (
                     icao24 VARCHAR(50) NOT NULL,
-                    firstSeen TIMESTAMP,
+                    firstSeen INT,
                     estDepartureAirport VARCHAR(15),
-                    lastSeen TIMESTAMP,
+                    lastSeen INT,
                     estArrivalAirport VARCHAR(15),
                     callsign VARCHAR(50),
                     estDepartureAirportHorizDistance INT,
@@ -150,11 +150,12 @@ def load_opensky_to_snowflake(cursor, results, target_table):
                     createAt TIMESTAMP NOT NULL
                 )
         """)
+        
 
         # insert data
         insert_query = f"""
                         INSERT INTO {target_table} ({','.join(results.columns.tolist())})
-                        VALUES ({','.join(['%s' for _ in results.columns])})
+                        VALUES ({','.join(['TO_TIMESTAMP(%s)' if col in ('CREATEAT', 'CreateAt') else '%s' for col in results.columns])})
                         """
         values = [(row.map(lambda x: None if pd.isna(x) else x).tolist()) for _, row in results.iterrows()]
 
