@@ -91,7 +91,7 @@ def put_airplane_data(**kwargs):
     
     # snowflake only used capital letter colname
     df.columns = [col.upper() for col in df.columns]
-    df['CREATEAT'] = pd.to_datetime(df['CREATEAT'], unit='s')
+    df['CREATEAT'] = pd.to_datetime(df['CREATEAT'], unit='s', utc=True)
     df['CREATEAT'] = df['CREATEAT'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) else None)
     
     upload_to_snowflake(conn_info, df, SnowflakeTableName)
