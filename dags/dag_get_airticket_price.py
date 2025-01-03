@@ -192,8 +192,8 @@ with DAG(
     'upload_ticket_price',
     default_args=default_args,
     description='get airplane direction, get airplane ticket price, and upload to snowflake',
-    schedule_interval=timedelta(minutes=2),
-    start_date=datetime(2026, 1, 1),
+    schedule_interval=timedelta(days=1),
+    start_date=datetime(2025, 1, 1),
     catchup=False,
 ) as dag:
 
