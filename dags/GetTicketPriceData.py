@@ -461,6 +461,67 @@ def GetBulkAirticketPrice(SearchList : list[tuple], DepartureDate : str, isDirec
     return bulk_result
 
 
+def GetBulkAirticketPricebyDate(SearchDates : list, DepartureAirport : str, ArrivalAirport : str, isDirect=True, fareType = "Y"):
+    '''
+
+    Parameters
+    ----------
+    DepartureDate : list
+        list formmated (%Y%m%d) date data
+    DepartureAirport : String
+        IATA CODE : 3 char departureAirport Name (required)
+    ArrivalAirport : String
+        IATA CODE : 3 char ArrivalAirport Name (required)
+    isDirect : Boolean
+        KOREA_DOMESTIC_DATA IS NOT USED VALUE
+        Decide whether to fly direct or via transit (optional)
+    fareType : String
+        KOREA_DOMESTIC_DATA IS NOT USED VALUE
+        type of seat (optional)
+            Y: economy class (Default)
+            P: Premium Economy Class
+            C: Business class
+            F: First class
+
+    Returns
+    -------
+    bulk_result : dict[DataFrame]
+        {company_name : DataFrame, # meta dataframe
+         faretype : DataFrame,     # meta dataframe
+         schedule : DataFrame,     # schedule dataframe
+         fare : DataFrame}         # fare dataframe
+
+    '''
+    # init
+    bulk_result = {
+        'company_name' : [],
+        'fareType' : [],
+        'schedule' : [],
+        'fare' : []
+        }
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers = os.cpu_count()*2) as executor:
+        futures = []
+        # submit data
+        for DepartureDate in SearchDates:
+            futures.append(executor.submit(GetAirticketPrice, DepartureAirport, ArrivalAirport, DepartureDate, isDirect, fareType))
+
+        for future in concurrent.futures.as_completed(futures):
+            # fetch data
+            data = future.result()
+            
+            # append data
+            bulk_result['company_name'].append(data[0])
+            bulk_result['fareType'].append(data[1])
+            bulk_result['schedule'].append(data[2])
+            bulk_result['fare'].append(data[3])
+        
+        bulk_result['company_name'] = pd.concat(bulk_result['company_name'], axis = 0).drop_duplicates()
+        bulk_result['fareType'] = pd.concat(bulk_result['fareType'], axis = 0).drop_duplicates()
+        bulk_result['schedule'] = pd.concat(bulk_result['schedule'], axis = 0).drop_duplicates()
+        bulk_result['fare'] = pd.concat(bulk_result['fare'], axis = 0).drop_duplicates()
+        
+    return bulk_result
 
 # Test Code
 if __name__ == "__main__":
@@ -477,6 +538,7 @@ if __name__ == "__main__":
     chunk_ticket_price = GetAirticketPrice("GMP", "CJU", "20250211")
 
     # 멀티 스레드 데이터 요청
-    price_dict = GetBulkAirticketPrice(SearchList = [("GMP","CJU"), ('ICN','JFK'), ('ICN','HAN'), ('ICN','HNL'), ('ICN','PEK'), ('ICN','NRT')], DepartureDate = "20250211", isDirect=True, fareType = "Y")
+    price_dict_by_airport = GetBulkAirticketPrice(SearchList = [("GMP","CJU"), ('ICN','JFK'), ('ICN','HAN'), ('ICN','HNL'), ('ICN','PEK'), ('ICN','NRT')], DepartureDate = "20250211", isDirect=True, fareType = "Y")
+    price_dict_by_date = GetBulkAirticketPricebyDate(SearchDates = ["20250213", "20250212"], DepartureAirport = "ICN", ArrivalAirport = "JFK", isDirect=True, fareType = "Y")
 
 

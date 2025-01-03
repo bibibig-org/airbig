@@ -72,17 +72,21 @@ def get_and_fetch_airticket_price(**kwargs):
     df = df.dropna()
     
     # Top N (적절히 분배) / 25개 이상 요청 힘들어 보임.
-    df = df.iloc[:25]
+    df = df.iloc[:50]
     
     # 수집 date range
     departure_date_range = [(datetime.now() + timedelta(days=i)).strftime('%Y%m%d') for i in range(1,14)]
     
-    for target_date in departure_date_range:
-
-        # SearchList와 DepartureDate 변수를 적절하게 조정 / 적재 기간에 따라 설정정
-        airticket_data = TicketService.GetBulkAirticketPrice(SearchList = [(row[1]['ESTDEPARTUREAIRPORT'], row[1]['ESTARRIVALAIRPORT']) for row in df.iterrows()],
-                                                             DepartureDate = target_date)
-
+    for row in df.iterrows():
+        
+        DepartureAirport, ArrivalAirport = row[1]['ESTDEPARTUREAIRPORT'], row[1]['ESTARRIVALAIRPORT']
+    
+    
+        airticket_data = TicketService.GetBulkAirticketPricebyDate(SearchDates = departure_date_range,
+                                                                   DepartureAirport = DepartureAirport,
+                                                                   ArrivalAirport = ArrivalAirport,
+                                                                   isDirect=True,
+                                                                   fareType = "Y")
         
         
         with snowflake.connector.connect(user=SnowflakeID, 
@@ -174,7 +178,7 @@ def get_and_fetch_airticket_price(**kwargs):
             cursor.close()
         
         # wait
-        time.sleep(30)
+        time.sleep(60)
                
     
 
