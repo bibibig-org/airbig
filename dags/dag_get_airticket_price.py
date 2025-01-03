@@ -4,6 +4,7 @@ from airflow import DAG
 from airflow.models import Variable
 from airflow.operators.python import PythonOperator
 
+import os
 import time
 import requests
 import pandas as pd
@@ -60,7 +61,7 @@ def get_and_fetch_airticket_price(**kwargs):
     # airport_code_mapping_dict = {row[1]['ICAO'] : row[1]['IATA'] for row in meta_data.iterrows()}
     
     # read meta data (2안 / 국내에서 제공한 리스트만 사용하기)
-    meta_data = pd.read_csv('airport_info_20231231.csv', encoding = 'cp949')
+    meta_data = pd.read_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "airport_info_20231231.csv"), encoding = 'cp949')
     airport_code_mapping_dict = {row[1]['공항코드2(ICAO)'] : row[1]['공항코드1(IATA)'] for row in meta_data.iterrows()}
 
     # code mapping
