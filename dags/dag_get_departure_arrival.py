@@ -133,25 +133,6 @@ def load_opensky_to_snowflake(cursor, results, target_table):
     try:
         cursor.execute("BEGIN")
 
-        cursor.execute(f"""      
-            CREATE OR REPLACE TABLE {target_table} (
-                    icao24 VARCHAR(50) NOT NULL,
-                    firstSeen INT,
-                    estDepartureAirport VARCHAR(15),
-                    lastSeen INT,
-                    estArrivalAirport VARCHAR(15),
-                    callsign VARCHAR(50),
-                    estDepartureAirportHorizDistance INT,
-                    estDepartureAirportVertDistance INT,
-                    estArrivalAirportHorizDistance INT,
-                    estArrivalAirportVertDistance INT,
-                    departureAirportCandidatesCount INT,
-                    arrivalAirportCandidatesCount INT,
-                    createAt TIMESTAMP NOT NULL
-                )
-        """)
-        
-
         # insert data
         insert_query = f"""
                         INSERT INTO {target_table} ({','.join(results.columns.tolist())})
