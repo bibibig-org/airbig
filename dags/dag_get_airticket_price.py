@@ -4,6 +4,7 @@ from airflow import DAG
 from airflow.models import Variable
 from airflow.operators.python import PythonOperator
 
+import time
 import requests
 import pandas as pd
 from io import StringIO
@@ -76,6 +77,7 @@ def get_and_fetch_airticket_price(**kwargs):
     departure_date_range = [(datetime.now() + timedelta(days=i)).strftime('%Y%m%d') for i in range(1,14)]
     
     for target_date in departure_date_range:
+
         # SearchList와 DepartureDate 변수를 적절하게 조정 / 적재 기간에 따라 설정정
         airticket_data = TicketService.GetBulkAirticketPrice(SearchList = [(row[1]['ESTDEPARTUREAIRPORT'], row[1]['ESTARRIVALAIRPORT']) for row in df.iterrows()],
                                                              DepartureDate = target_date)
@@ -169,8 +171,10 @@ def get_and_fetch_airticket_price(**kwargs):
 
             # cursor close
             cursor.close()
-
         
+        # wait init
+        time.sleep(20)
+               
     
 
 
