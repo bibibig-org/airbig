@@ -1,6 +1,3 @@
-import os
-os.chdir(r'C:\Users\styli\OneDrive\Desktop\새 폴더')
-
 import GetTicketPriceData as TicketService
 
 from airflow import DAG
