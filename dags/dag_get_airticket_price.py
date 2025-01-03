@@ -178,7 +178,7 @@ def get_and_fetch_airticket_price(**kwargs):
             cursor.close()
         
         # wait
-        time.sleep(60)
+        time.sleep(90)
                
     
 
