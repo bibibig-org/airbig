@@ -71,7 +71,7 @@ def return_snowflake_conn():
                                 database=conn_info['database'],
                                 schema=conn_info['schema'])
 
-    return conn.cursor()
+    return conn
 
 @task
 def extract_opensky():
@@ -122,15 +122,17 @@ def extract_opensky():
 
     return df_raw
 @task
-def transform_opensky(df_raw):
-    df_raw['createAt'] = datetime.now(timezone.utc)
-    df_raw['createAt'] = df_raw['createAt'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) else None)
+def transform_opensky(df_transformed):
+    df_transformed['createAt'] = datetime.now(timezone.utc)
+    df_transformed['createAt'] = df_transformed['createAt'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) else None)
 
-    return df_raw
+    return df_transformed
 
 @task
-def load_opensky_to_snowflake(cursor, results, target_table):
+def load_opensky_to_snowflake(results, target_table):
     try:
+        conn = return_snowflake_conn()
+        cursor = conn.cursor()
         cursor.execute("BEGIN")
 
         # insert data
@@ -148,6 +150,7 @@ def load_opensky_to_snowflake(cursor, results, target_table):
         print(e)
         raise RuntimeError(f"Error loading data to Snowflake: {e}")
     finally:
+        conn.close()
         cursor.close()
 
 
@@ -159,8 +162,7 @@ with DAG(
     schedule='*/2 * * * *'
 ) as dag:
     target_table = "bibibig.bronze_state_data.aircraft_departure_arrival"
-    cursor = return_snowflake_conn()
-
+    
     raw_data = extract_opensky()
     transformed_data = transform_opensky(raw_data)
-    load_opensky_to_snowflake(cursor, transformed_data, target_table)
+    load_opensky_to_snowflake(transformed_data, target_table)
