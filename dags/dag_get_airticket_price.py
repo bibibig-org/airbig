@@ -71,8 +71,8 @@ def get_and_fetch_airticket_price(**kwargs):
     # drop na
     df = df.dropna()
     
-    # Top N (적절히 분배)
-    df = df.iloc[:50]
+    # Top N (적절히 분배) / 25개 이상 요청 힘들어 보임.
+    df = df.iloc[:25]
     
     # 수집 date range
     departure_date_range = [(datetime.now() + timedelta(days=i)).strftime('%Y%m%d') for i in range(1,14)]
@@ -173,8 +173,8 @@ def get_and_fetch_airticket_price(**kwargs):
             # cursor close
             cursor.close()
         
-        # wait init
-        time.sleep(20)
+        # wait
+        time.sleep(30)
                
     
 
