@@ -101,11 +101,15 @@ def GetDomesticAirticketPrice(DepartureAirport : str, ArrivalAirport : str, Depa
         time.sleep(5)
 
     # parse data
-    total_data['status']['departure']['depAirportName'] = bytes(total_data['status']['departure']['depAirportName'], 'latin1').decode('utf-8')
-    total_data['status']['departure']['arrAirportName'] = bytes(total_data['status']['departure']['arrAirportName'], 'latin1').decode('utf-8')
-
-    total_data['status']['airlinesCodeMap'] = {k : bytes(v, 'latin1').decode('utf-8') for k, v in total_data['status']['airlinesCodeMap'].items()}
-    total_data['status']['opCodeMap'] = {k : bytes(v, 'latin1').decode('utf-8') for k, v in total_data['status']['opCodeMap'].items()}
+    if 'departure' in total_data['status'].keys():
+        total_data['status']['departure']['depAirportName'] = bytes(total_data['status']['departure']['depAirportName'], 'latin1').decode('utf-8')
+        total_data['status']['departure']['arrAirportName'] = bytes(total_data['status']['departure']['arrAirportName'], 'latin1').decode('utf-8')
+    
+    if 'airlinesCodeMap' in total_data['status'].keys():
+        total_data['status']['airlinesCodeMap'] = {k : bytes(v, 'latin1').decode('utf-8') for k, v in total_data['status']['airlinesCodeMap'].items()}
+        
+    if 'opCodeMap' in total_data['status'].keys():
+        total_data['status']['opCodeMap'] = {k : bytes(v, 'latin1').decode('utf-8') for k, v in total_data['status']['opCodeMap'].items()}
 
 
     return total_data
@@ -235,7 +239,10 @@ def GetInternationalAirticketPrice(DepartureAirport : str, ArrivalAirport : str,
         data = response.json()
         
         # break condition
-        if data['data']['internationalList']['results']['airlines'] == {}: # empty
+        try:
+            if data['data']['internationalList']['results']['airlines'] == {}: # empty
+                break
+        except: # Nonetype이 들어온 경우 (*요청할 수 없는 IATA 코드로 요청한 경우)
             break
         
         # concat data        
@@ -261,6 +268,9 @@ def GetInternationalAirticketPrice(DepartureAirport : str, ArrivalAirport : str,
 
 
 def FetchDomesticAirticketPrice(json_data):
+    if 'airlinesCodeMap' not in json_data['status'].keys():
+        return None, None, None, None
+    
     # meta data
     df_company_name = (pd.Series(json_data['status']['airlinesCodeMap'])
                        .reset_index()
@@ -345,8 +355,10 @@ def FetchInternationalAirticketPrice(json_data):
                     df_fare.loc[idx_counter, k] = v
             
             idx_counter += 1
-    df_fare.insert(1, 'seatClass', json_data['seatClass'])
-    df_fare = df_fare.drop_duplicates()
+            
+    if len(df_fare) > 0:
+        df_fare.insert(1, 'seatClass', json_data['seatClass'])
+        df_fare = df_fare.drop_duplicates()
     
     return df_company_name, df_faretype, df_schedule, df_fare
 
@@ -388,6 +400,7 @@ def GetAirticketPrice(DepartureAirport : str, ArrivalAirport : str, DepartureDat
     if (DepartureAirport in KOR_DOMESTIC_AIRPORT) and (ArrivalAirport in KOR_DOMESTIC_AIRPORT):
         data = GetDomesticAirticketPrice(DepartureAirport, ArrivalAirport, DepartureDate)
         data = FetchDomesticAirticketPrice(data)
+        # print('domestic')
     # InternationalAirline
     else: 
         data = GetInternationalAirticketPrice(DepartureAirport, ArrivalAirport, DepartureDate, isDirect = isDirect, fareType = fareType)
@@ -461,8 +474,9 @@ if __name__ == "__main__":
     
     # 통합 데이터 요청
     chunk_ticket_price = GetAirticketPrice("ICN", "JFK", "20250211")
+    chunk_ticket_price = GetAirticketPrice("GMP", "CJU", "20250211")
 
     # 멀티 스레드 데이터 요청
-    price_dict = GetBulkAirticketPrice(SearchList = [("GMP","CJU"), ('ICN','JFK'), ('ICN','HAN'), ('ICN','HNL'), ('ICN','PEK'), ('ICN','NRT')], DepartureDate = "20250211")
+    price_dict = GetBulkAirticketPrice(SearchList = [("GMP","CJU"), ('ICN','JFK'), ('ICN','HAN'), ('ICN','HNL'), ('ICN','PEK'), ('ICN','NRT')], DepartureDate = "20250211", isDirect=True, fareType = "Y")
 
 
