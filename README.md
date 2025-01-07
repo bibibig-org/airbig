@@ -99,7 +99,6 @@ OpenSky API를 활용하여 실시간 비행기의 위치를 추적하고, 이�
         - OpenSkyAPI에 `/states/all`을 요청
         - Snowflake Conn을 이용해 INSERT 문을 작성, excutemany로 한번에 적재
         - AIRPLANE_NOW_LOCATION 테이블은 TRUNCATE TABLE을 통해 테이블을 비운 뒤 현재 데이터만 적재
-        - 
 - **(FACT) AIRPLANE_DEPARTURE_ARRIVAL**
     - Airflow Dag (1시간 간격)을 통해 (현재로부터 25시간 ~ 24시간 전) 데이터를 적재
         - AIRPLANE_DEPARTURE_ARRIVAL 데이터는 Opensky측에서 일 배치로 적재되고 있어, 24시간 이전 데이터는 반환하지 않음.
@@ -108,7 +107,6 @@ OpenSky API를 활용하여 실시간 비행기의 위치를 추적하고, 이�
     - Dag 구성
         - OpenSkyAPI에 `/api/flights/all`을 요청
         - Snowflake Conn을 이용해 INSERT 문을 작성, excutemany로 한번에 적재
-        - 
 - **(DIM) AIRPORT_LOCATION, AIRPORT_INFO**
     - Snowflake에 CSV를 통한 1회성 적재 실시
 
@@ -121,7 +119,7 @@ OpenSky API를 활용하여 실시간 비행기의 위치를 추적하고, 이�
 - **실시간 비행기 위치 정보 Chart**
     - 현 시각 비행 중인 비행기의 위치 정보를 지도에 표시
  
-| Dimension      | 항공기 |
+| Dimension | 항공기 |
 |----------------|-----|
 | **X axis**     | 경도 |
 | **Y axis**     | 위도 |
@@ -131,7 +129,7 @@ OpenSky API를 활용하여 실시간 비행기의 위치를 추적하고, 이�
 
 |                |           |
 |----------------|-----------|
-| **X axis**     | Count     |
+| **X axis**     |Count|
 | **Y axis**     | 비행기의 국적 |
 
 - *공항 출도착 비행 정보**
@@ -214,6 +212,7 @@ OpenSky API를 활용하여 실시간 비행기의 위치를 추적하고, 이�
 3. **공항 출도착 비행 정보 시각화**
     - 주요 공항의 출발 및 도착 항공편 현황을 제공하며, 공항별 혼잡도 및 운영 상황을 생각해볼 수 있도록 설계.
   
+
   
 ## 6. 결론 및 향후 개선사항
 
@@ -230,11 +229,11 @@ OpenSky API를 활용하여 실시간 비행기의 위치를 추적하고, 이�
 ### 향후 개선사항
 
 1. **항공권 데이터 수집 코드 고도화**
-    a. 현재 Github 내 GetTicketPriceData.py와, dag_get_airticket_price.py가 구현되어 있음
-        i. 코드 - https://github.com/bibibig-org/airbig/blob/master/dags/GetTicketPriceData.py
-        ii. 설명 : 네이버 항공권 검색에 POST 요청을 통해 국내/외의 항공권을 조회하는 서비스
-    b. 해당 서비스를 통해 가장 많이 이용하는 항공 노선 100개의 평균 구매 가격을 구하고자 하였으나, 네이버 항공권 크롤링 시 150건 이상의 POST 요청을 보내면 약 1시간의 Time Out이 내부적으로 존재하는 점을 확인하였음 (503 에러 반환, VPN 등으로 IP 전환 시 정상 값 반환)
-    c. 고도화 단계에서 이용 가능한 IP 대역대를 다수 확보하여, 503 에러 반환시 새로운 IP를 통해 요청하는 방식으로 대응 코드 작성 필요
+    - a. 현재 Github 내 GetTicketPriceData.py와, dag_get_airticket_price.py가 구현되어 있음
+        - i. 코드 - https://github.com/bibibig-org/airbig/blob/master/dags/GetTicketPriceData.py
+        - ii. 설명 : 네이버 항공권 검색에 POST 요청을 통해 국내/외의 항공권을 조회하는 서비스
+    - b. 해당 서비스를 통해 가장 많이 이용하는 항공 노선 100개의 평균 구매 가격을 구하고자 하였으나, 네이버 항공권 크롤링 시 150건 이상의 POST 요청을 보내면 약 1시간의 Time Out이 내부적으로 존재하는 점을 확인하였음 (503 에러 반환, VPN 등으로 IP 전환 시 정상 값 반환)
+    - c. 고도화 단계에서 이용 가능한 IP 대역대를 다수 확보하여, 503 에러 반환시 새로운 IP를 통해 요청하는 방식으로 대응 코드 작성 필요
 2. **대용량 데이터 처리를 위한 Spark 클러스터 도입**
     - 현재 데이터 처리 방식은 pandas로 이루어졌으며, 대규모 데이터를 처리하는 데 한계가 존재할 수 있습니다.
     - Apache Spark 클러스터를 도입하여 데이터 처리 작업을 분산하여 병렬 처리 성능을 극대화하고,  대규모 데이터 분석 작업을 최적화할 수 있습니다.
