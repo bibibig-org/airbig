@@ -20,6 +20,7 @@ SnowflakeAccount = Variable.get("SnowflakeAccount")
 SnowflakeDatabase = Variable.get("SnowflakeDatabase")
 SnowflakeSchema = Variable.get("SnowflakeSchema")
 SnowflakeTableName = 'AIRPLANE_LOCATION'
+SnowflakeNowTalbeName = 'AIRPLANE_NOW_LOCATION'
 
 
 #%%
@@ -53,13 +54,14 @@ def get_airplane_location(**kwargs):
 
 
 # S3 업로드 함수
-def upload_to_snowflake(conn_info, dataframe, table_name):  
+def upload_to_snowflake(conn_info, dataframe, table_name, overwrite=False):  
     with snowflake.connector.connect(user=conn_info['user'], 
                                      password=conn_info['password'], 
                                      account=conn_info['account'],
                                      database=conn_info['database'],
                                      schema=conn_info['schema']) as conn:
-        write_pandas(conn, dataframe, table_name)
+
+        write_pandas(conn, dataframe, table_name, overwrite = overwrite)
 
 
 
@@ -76,8 +78,12 @@ def put_airplane_data(**kwargs):
     
     # snowflake only used capital letter colname
     df.columns = [col.upper() for col in df.columns]
+    
+    # Append Table
     upload_to_snowflake(conn_info, df, SnowflakeTableName)
     
+    # Insert Table
+    upload_to_snowflake(conn_info, df, SnowflakeNowTalbeName, overwrite=True)
     
 
 # DAG 정의

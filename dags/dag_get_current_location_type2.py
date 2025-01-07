@@ -20,6 +20,7 @@ SnowflakeAccount = Variable.get("SnowflakeAccount")
 SnowflakeDatabase = Variable.get("SnowflakeDatabase")
 SnowflakeSchema = Variable.get("SnowflakeSchema")
 SnowflakeTableName = 'AIRPLANE_LOCATION'
+SnowflakeNowTalbeName = 'AIRPLANE_NOW_LOCATION'
 
 
 
@@ -54,7 +55,7 @@ def get_airplane_location(**kwargs):
 
 
 # upload 함수
-def upload_to_snowflake(conn_info, dataframe, table_name):  
+def upload_to_snowflake(conn_info, dataframe, table_name, truncate_table = False):  
     with snowflake.connector.connect(user=conn_info['user'], 
                                      password=conn_info['password'], 
                                      account=conn_info['account'],
@@ -63,6 +64,11 @@ def upload_to_snowflake(conn_info, dataframe, table_name):
         
 
         cursor = conn.cursor()
+        
+        # if Truncated_table is ture
+        if truncate_table:
+            cursor.execute(f'TRUNCATE TABLE IF EXISTS {table_name}')
+        
         
         # insert data
         insert_query = f"""
@@ -94,7 +100,12 @@ def put_airplane_data(**kwargs):
     df['CREATEAT'] = pd.to_datetime(df['CREATEAT'], unit='s', utc=True)
     df['CREATEAT'] = df['CREATEAT'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) else None)
     
+    # APPEND DATA
     upload_to_snowflake(conn_info, df, SnowflakeTableName)
+    
+    # NOW DATA
+    
+    upload_to_snowflake(conn_info, df, SnowflakeNowTalbeName)
     
     
 
