@@ -159,7 +159,7 @@ with DAG(
     start_date=datetime(2025, 1, 1),
     catchup=False,
     tags=['ETL', 'OpenSkyAPI', 'Flights in Time Interval', 'aircraft departure and arrival data'],
-    schedule='*/2 * * * *'
+    schedule='0 * * * *'
 ) as dag:
     target_table = "bibibig.bronze_state_data.aircraft_departure_arrival"
     
