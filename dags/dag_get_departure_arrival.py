@@ -39,13 +39,13 @@ import snowflake.connector
 '''
 
 # 인증 정보
-OpenskyID = Variable.get("OpenskyID")
-OpenskyPW = Variable.get("OpenskyPW")
-SnowflakeID = Variable.get("SnowflakeID")
-SnowflakePW = Variable.get("SnowflakePW")
-SnowflakeAccount = Variable.get("SnowflakeAccount")
-SnowflakeDatabase = Variable.get("SnowflakeDatabase")
-SnowflakeSchema = Variable.get("SnowflakeSchema")
+OpenskyID = Variable.get("opensky_id")
+OpenskyPW = Variable.get("opensky_pw")
+SnowflakeID = Variable.get("snowflake_id")
+SnowflakePW = Variable.get("snowflake_pw")
+SnowflakeAccount = Variable.get("snowflake_account")
+SnowflakeDatabase = Variable.get("snowflake_database")
+SnowflakeSchema = Variable.get("snowflake_schema")
 
 
 '''

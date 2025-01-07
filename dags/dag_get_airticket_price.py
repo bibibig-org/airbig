@@ -15,11 +15,11 @@ from datetime import datetime, timedelta
 
 
 # 인증 정보
-SnowflakeID = Variable.get("SnowflakeID")
-SnowflakePW = Variable.get("SnowflakePW")
-SnowflakeAccount = Variable.get("SnowflakeAccount")
-SnowflakeDatabase = Variable.get("SnowflakeDatabase")
-SnowflakeSchema = Variable.get("SnowflakeSchema")
+SnowflakeID = Variable.get("snowflake_id")
+SnowflakePW = Variable.get("snowflake_pw")
+SnowflakeAccount = Variable.get("snowflake_account")
+SnowflakeDatabase = Variable.get("snowflake_database")
+SnowflakeSchema = Variable.get("snowflake_schema")
 
 # Snowflake에서 필요한 데이터를 가져와서, Top 100(?)
 def get_airplane_direction(**kwargs):
