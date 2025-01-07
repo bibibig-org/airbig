@@ -72,7 +72,7 @@ def upload_to_snowflake(conn_info, dataframe, table_name, truncate_table = False
         
         # insert data
         insert_query = f"""
-                        INSERT INTO AIRPLANE_LOCATION ({','.join(dataframe.columns.tolist())})
+                        INSERT INTO {table_name} ({','.join(dataframe.columns.tolist())})
                         VALUES ({','.join(['TO_TIMESTAMP(%s)' if col in ('CREATEAT', 'CreateAt') else '%s' for col in dataframe.columns])})
                         """
         values = [(row.map(lambda x: None if pd.isna(x) else x).tolist()) for _, row in dataframe.iterrows()]
