@@ -104,8 +104,7 @@ def put_airplane_data(**kwargs):
     upload_to_snowflake(conn_info, df, SnowflakeTableName)
     
     # NOW DATA
-    
-    upload_to_snowflake(conn_info, df, SnowflakeNowTalbeName)
+    upload_to_snowflake(conn_info, df, SnowflakeNowTalbeName, truncate_table = True)
     
     
 
