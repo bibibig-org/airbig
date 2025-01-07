@@ -226,6 +226,51 @@ OpenSky API를 활용하여 실시간 비행기의 위치를 추적하고, 이�
 
 개발된 대시보드는 실시간 항공 데이터를 효과적으로 제공하여 항공 산업의 데이터 활용 가능성을 제시하며, 공항 운영과 사용자 경험을 개선할 수 있는 기반을 마련하였습니다.
 
+## 7. 프로젝트 실행 방법
+
+### 적재 준비
+
+OpenSky 웹 사이트 회원 가입 - https://opensky-network.org/
+Snowflake 계정 준비
+
+레포지터리 복제
+```
+git clone https://github.com/bibibig-org/airbig.git
+```
+
+airflow_variable.env 파일 수정
+```
+AIRFLOW_VAR_OPENSKY_ID="YourOpenSkyID"
+AIRFLOW_VAR_OPENSKY_PW="YourOpenSkyPW"
+AIRFLOW_VAR_SNOWFLAKE_ACCOUNT="YourSnowflakeAccount"
+AIRFLOW_VAR_SNOWFLAKE_ID="YourSnowflakeID"
+AIRFLOW_VAR_SNOWFLAKE_PW="YourSnowflakePW"
+AIRFLOW_VAR_SNOWFLAKE_DATABASE="BIBIBIG"
+AIRFLOW_VAR_SNOWFLAKE_SCHEMA="BRONZE_STATE_DATA"
+```
+
+./snowflake_table_schema 아래 SQL 실행 (Snowflake Table 생성, DDL)
+- 실행 순서
+   1. INIT_DATABASE_SCHEMA.sql 구문 실행
+   2. 나머지 .sql 파일 실행
+   3. AIRPLANE_LOCATION_DATA.csv, AIRPORT_INFO_DATA.csv는 snowflake에 동일한 명칭을 가진 테이블에 데이터 적재
+
+
+프로젝트 실행
+```
+docker compose up
+```
+
+활성화 Dag 선택
+- upload_location_data_sql_insert : 실시간 항공기 위치를 업로드 (Snowflake에 직접 Insert) 
+- upload_location_data : 실시간 항공기 위치를 업로드 (csv 업로드)
+- opensky_flights_etl_dept_arrival_to_snowflake : 항공기의 최근 1시간 내 출/도착 정보 업로드 (Snowflake에 직접 Insert)
+- upload_ticket_price_naver : 최다 이용 경로의 네이버 항공기 가격 조회 (소량 조회 가능)
+
+
+Tableau나 외부 BI로 Snowflake를 연결
+
+
 ### 향후 개선사항
 
 1. **항공권 데이터 수집 코드 고도화**
