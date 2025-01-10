@@ -8,10 +8,10 @@
 3. [활용 기술 및 프레임워크](#3-활용-기술-및-프레임워크)
 4. [프로젝트 내용](#4-프로젝트-내용)
    - [Infra](#infra)
-   - [Data Pipeline](#data-pipeline)
+   - [Data Pipeline](#Data-Pipeline)
    - [Data](#data)
-     - [ERD & 데이터 리니지](#erd--데이터-리니지)
-     - [데이터 수집](#데이터-수집)
+     - [ERD](#1-erd)
+     - [데이터 수집](#2-데이터-수집)
    - [Dashboard](#dashboard)
    - [Cowork Tools](#cowork-tools)
 5. [프로젝트 결과](#5-프로젝트-결과)
@@ -20,9 +20,10 @@
    - [결론](#결론)
    - [향후 개선사항](#향후-개선사항)
 
+
 ## 1. 프로젝트 개요
 ### 📖 1-1. 주제
-OpenSky API를 활용하여 실시간 비행기의 위치를 추적하고, 이를 대시보드에서 시각화하여 사용자에게 제공하는 시스템을 구축.
+전 세계 실시간 비행 모니터링 및 공항 분석
 
 ### ✔️ 1-2. 주제 선정 이유
 항공 산업은 글로벌화된 세상에서 중요한 역할을 담당하며, 전 세계적으로 수많은 비행기가 동시에 운항 중입니다. 이러한 환경에서 실시간 비행 추적은 항공 안전, 공항 관리, 그리고 항공기 경로 최적화를 위한 중요한 데이터를 제공합니다. 본 프로젝트는 OpenSky API를 활용하여 비행기의 실시간 위치 데이터를 시각화함으로써, 항공 산업의 데이터 활용 가능성을 탐구하고 공항 운영 및 사용자 경험 개선에 기여하고자 합니다.
@@ -62,7 +63,8 @@ OpenSky API를 활용하여 실시간 비행기의 위치를 추적하고, 이�
 
 ## 4. 프로젝트 내용
 ### 🏗️ Infra
-![비비빅 drawio](https://github.com/user-attachments/assets/0165c510-b416-44db-bebf-4bc2cf50a81c)
+![bibibig_archi_tokyo](https://github.com/user-attachments/assets/80f51902-4c51-4a2f-a5b5-efb54bb75e0e)
+
 
 
 ### Data Pipeline
@@ -76,8 +78,9 @@ OpenSky API를 활용하여 실시간 비행기의 위치를 추적하고, 이�
 
 
 ### 💽 Data
-#### 1. ERD & 데이터 리니지
-![비비빅4](https://github.com/user-attachments/assets/62cc8bf4-cae7-43d5-b1a5-78345f4d0aa0)
+#### 1. ERD
+![비비빅_ERD](https://github.com/user-attachments/assets/13dd25f6-2ac8-41e8-930f-2df922ce3341)
+
 
 
 #### 2. 데이터 수집
@@ -85,8 +88,8 @@ OpenSky API를 활용하여 실시간 비행기의 위치를 추적하고, 이�
 
 | Table Type | Table Name                  | Comment                                    | Source                                |
 |------------|-----------------------------|--------------------------------------------|---------------------------------------|
-| FACT       | AIRPLANE_LOCATION            | 항공기의 실시간 위치 값                    | OpenSky REST API                      |
-| FACT       | AIRPLANE_NOW_LOCATION        | 항공기의 실시간 위치 값                    | OpenSky REST API                      |
+| FACT       | AIRPLANE_LOCATION            | 항공기의 실시간 위치 값(5분 단위 누적 적재)        | OpenSky REST API                      |
+| FACT       | AIRPLANE_NOW_LOCATION        | 항공기의 실시간 최신 위치 값                    | OpenSky REST API                      |
 | FACT       | AIRPLANE_DEPARTURE_ARRIVAL   | 조회 시간에 해당하는 항공기의 출도착 정보 | OpenSky REST API                      |
 | DIM        | AIRPORT_LOCATION             | IATA, ICAO 코드와 위/경도 값을 매핑하기 위한 테이블 | [github/ip2location/ip2location-iata-icao](https://github.com/ip2location/ip2location-iata-icao) |
 | DIM        | AIRPORT_INFO                 | IATA, ICAO 코드에 해당하는 공항 메타 데이터 테이블 | 국토교통부_세계공항_정보(공공데이터) https://www.data.go.kr/data/3051587/fileData.do?recommendDataYn=Y |
@@ -112,70 +115,89 @@ OpenSky API를 활용하여 실시간 비행기의 위치를 추적하고, 이�
 
 
 ### 📋 Dashboard
-<img width="1042" alt="image" src="https://github.com/user-attachments/assets/09f8f459-4d15-4655-8dae-07b7a6b32968" />
+- **최근 1개월 간 전세계 항공 대시보드**
+![최근1개월간_전세계항공대시보드](https://github.com/user-attachments/assets/cfeed52b-87b5-4077-8ac9-32c1c2f6b4e5)
 
-![image (1)](https://github.com/user-attachments/assets/ea5b7f7b-1ecd-424a-83f7-ec56f618d0f2)
+- **실시간 비행 모니터링**
+![실시간비행모니터링](https://github.com/user-attachments/assets/fb0ab337-fa3f-4f12-96f4-565a4e384e69)
 
 - **실시간 비행기 위치 정보 Chart**
-    - 현 시각 비행 중인 비행기의 위치 정보를 지도에 표시
- 
-| Dimension | 항공기 |
-|----------------|-----|
-| **X axis**     | 경도 |
-| **Y axis**     | 위도 |
+- <img width="882" alt="실시간_비행기_위치정보_차트" src="https://github.com/user-attachments/assets/aadbb694-4446-4c42-972a-9a2bf6bf4b75" />
+   
+ - 현 시각 비행 중인 비행기의 위치 정보를 지도에 표시
+   
+ - SPI를 활용해 특수 목적 항공기 여부를 색깔로 구분해 표시
+   - 주황색 : 특수 목적 항공기
+   - 파란색 : 일반 항공기
+
+   | Dimension | 항공기 |
+   |----------------|-----|
+   |   **X axis**   | 경도 |
+   |   **Y axis**   | 위도 |
+
+
+- **실시간 노선 정보 Chart**
+- <img width="1035" alt="실시간_노선_정보_차트" src="https://github.com/user-attachments/assets/fa4a8281-a658-4a92-ba07-7098272fdd1b" />
+   
+   - 실시간 비행 경로는 비행 중인 항공기의 출발-도착 공항 위/경도 기준으로 작성
+   - 현 시각 비행 중인 비행기의 항공 경로를 Line Chart로 시각화
+
+   | Line | 비행기의 경로(출발-도착) |
+   |----------------|-----|
+   |   **X axis**   | 경도 |
+   |   **Y axis**   | 위도 |
 
 - **실시간 비행 국가 순위**
-    - 현 시각 비행 중인 비행기의 국적 정보 순위를 표현
-
-|                |           |
-|----------------|-----------|
-| **X axis**     |Count|
-| **Y axis**     | 비행기의 국적 |
-
-- *공항 출도착 비행 정보**
-
-![image (2)](https://github.com/user-attachments/assets/d8e70dd8-af6c-4510-ae27-996e74cab67e)
-
-- **공항 별 / 국적 별 출발 비행기 수**
-    - 해당 시각대에 출발한 비행기의 출발 공항/ 출발 국가를 표현
-
-| Dimension      | 공항/국가 |
-|----------------|-----|
-| **X axis**     | 시간 (년-월-일-시) |
-| **Y axis**     | Count |
+  - 현 시각 비행 중인 비행기의 국가 순위를 명도와 크기로 표현
+  - 국가 선택시 국가명, 비행 수, 순위 차례로 정보 제공
+  - <img width="881" alt="실시간_비행_국가_순위" src="https://github.com/user-attachments/assets/f523cee4-1c2d-4f0e-bd0f-b51735d87364" />
 
 
-- **공항 별 / 국가 별 출발 - 도착 정보**
-    - 비행기가 가장 많이 비행한 경로(국가 - 국가 / 공항 - 공항) 정보를 표현
+- **실시간 출도착 공항 순위 TOP 20**
+  - 현 시각 비행 중인 비행기의 출발/도착 공항 순위를 국가 기준으로 나열
 
-| Dimension      | 공항/국가 |
-|----------------|-----|
-| **X axis**     | Count |
-| **Y axis**     | 출발 공항 - 도착 공항 |
+- **공항 출도착 정보**
+- ![공항_출도착_정보](https://github.com/user-attachments/assets/72911aaa-3031-44da-b2ee-16e38ab9d82e)
+
+  - 공항 별/국적 별 출도착 비행기 수
+      - 해당 시각대에 출도착한 비행기의 공항/국가 표현
+      -     | Dimension | 공항 / 국가 |
+            |----------------|-----|
+            |   **X axis**   | 시간(시) |
+            |   **Y axis**   | Count |
+
+   - 출발/도착 공항 TOP 10
+       - 출발/도착 공항 순위를 명도와 크기로 표현
+       - 공항 선택시 순위, 비행 수 정보 제공
+       - <img width="658" alt="출발:도착_공항_TOP10" src="https://github.com/user-attachments/assets/837c8510-e9b0-4aa0-9b4e-cf22b2278e8f" />
 
 
-- **항공 포화도**
-    - 최근 1개월 간 비행기가 취항하고 있는 항공 노선(경로) 수
+   - 출발-도착 공항 별/국가 별 노선 정보
+       - 비행기가 가장 많이 비행한 경로 (국가-국가 / 공항-공항) 정보를 표현
+       -     | Dimension | 공항 / 국가 |
+             |----------------|-----|
+             |   **X axis**   | Count |
+             |   **Y axis**   | 출발 공항 - 도착 공항 |
 
-|                |           |
-|----------------|-----------|
-| **X axis**     | CallSign(비행기 호칭)     |
-| **Y axis**     | Count |
 
-- **비행기 항공 경로**
+- **공항 포화도**
+- ![공항 포화도 탐지 맵](https://github.com/user-attachments/assets/e06e7cda-b1cb-4a0a-a120-b164bce7f5f9)
 
-<img width="1044" alt="비행기_항공_경로" src="https://github.com/user-attachments/assets/178f9380-c91f-4ce9-ae48-7e0162fbe881" />
+- 최근 1개월 간 도착 비행기 수를 기준으로 공항 별 포화도 표현
+    - 공항 위치 정보 제공
+    - 크기에 따라 포화도 정도 표현
 
-![비행기_항공_경로_2](https://github.com/user-attachments/assets/0eea9949-8d89-44d8-a985-2c81d30af7ab)
 
-- **비행기 항공 경로 Chart**
-    - 실시간 비행 경로는 비행 중인 항공기의 출발 - 도착 공항 위/경도 기준으로 작성
-    - 현 시각 비행 중인 비행기의 항공 경로를 Line Chart로 시각화
 
-| Line      | 비행기의 경로 (출발 - 도착) |
-|----------------|-----|
-| **X axis**     | 경도 |
-| **Y axis**     | 위도 |
+- **국가 비행 정보**
+  - ![국가비행정보](https://github.com/user-attachments/assets/4ed397be-3c16-491f-ae76-6cb59dab1a8e)
+
+  - 분기 별 전체 비행 수를 국가 별로 표현
+    - 비행 수를 전체적인 원의 크기로 표현
+  - ![국가별_보유_공항_개수](https://github.com/user-attachments/assets/58ae3db2-198a-4673-95ef-86d0b563ba93)
+
+   - 국가별로 보유하고 있는 공항 개수를 표현
+      - 국가 클릭시 공항 개수, 순위를 제공
 
 
 ### 🗣️Cowork Tools
@@ -183,6 +205,7 @@ OpenSky API를 활용하여 실시간 비행기의 위치를 추적하고, 이�
   - 1. 매일 오전 10:00 스크럼 회의 진행하여 Daily to do 작성 및 진행 상황 보고
   - 2. 프로젝트 일정 <img width="843" alt="노션_진행상황" src="https://github.com/user-attachments/assets/f02d3e38-aa85-4cde-a01a-cb3070945e2b" />
   -  <img width="752" alt="노션_달력" src="https://github.com/user-attachments/assets/12a7419a-71e2-46dc-801f-5f6e33f9d38e" />
+
   - 3. 주제 선정 회의 <img width="543" alt="주제선정회의_비비빅" src="https://github.com/user-attachments/assets/c1ec8ab1-cd38-4310-9064-89aa4aa4895c" />
 
 - **Slack**: 팀 내 커뮤니케이션
