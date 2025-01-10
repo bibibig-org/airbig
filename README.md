@@ -89,8 +89,8 @@
 #### 2. 데이터 수집
 - 요약
 
-| Table Type | Table Name                  | Comment                                    | Source                                |
-|------------|-----------------------------|--------------------------------------------|---------------------------------------|
+| Table Type | Table Name                  | Comment                                                       | Source                                |
+|------------|-----------------------------|---------------------------------------------------------------|---------------------------------------|
 | FACT       | AIRPLANE_LOCATION            | 항공기의 실시간 위치 값(5분 단위 누적 적재)        | OpenSky REST API                      |
 | FACT       | AIRPLANE_NOW_LOCATION        | 항공기의 실시간 최신 위치 값                    | OpenSky REST API                      |
 | FACT       | AIRPLANE_DEPARTURE_ARRIVAL   | 조회 시간에 해당하는 항공기의 출도착 정보 | OpenSky REST API                      |
